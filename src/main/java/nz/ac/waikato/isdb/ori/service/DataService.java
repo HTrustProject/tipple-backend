@@ -22,27 +22,34 @@ public class DataService {
 	private final static String DATA_FIR = "/home/ralfh/ori";
 	private final static String DATA_FILE = "ori-2018.txt";
 
-	SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	private final static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+	private static final String lock = "data_file_lock";
 
 	public QrCodeScan save(QrCodeScan scan) throws DataException {
 		boolean valid = isValidHash(scan);
 		scan.setValid(valid);
-		if (!valid) {
-			return scan;
-		}
 
-		try (FileWriter fw = new FileWriter(getDataFile(), true)) {
+		if (valid) {
 			String formattedTime = dateFormat.format(scan.getTime());
 			String data = String.format("%d\t\"%s\"\t\"%s\"\t\"%s\"\n",
 					scan.getStudentId(), scan.getGroup(), scan.getQr(), formattedTime);
-			fw.append(data);
-			fw.flush();
-		}
-		catch (IOException e) {
-			throw new DataException(e);
+			writeData(data);
 		}
 
 		return scan;
+	}
+
+	protected void writeData(String data) throws DataException {
+		File dataFile = getDataFile();
+		synchronized (lock) {
+			try (FileWriter fw = new FileWriter(dataFile, true)) {
+				fw.append(data);
+				fw.flush();
+			} catch (IOException e) {
+				throw new DataException(e);
+			}
+		}
 	}
 
 	public int count() throws DataException {
@@ -54,8 +61,7 @@ public class DataService {
 		try {
 			List<String> lines = FileUtils.readLines(file, StandardCharsets.UTF_8);
 			return lines.size();
-		}
-		catch (IOException e) {
+		} catch (IOException e) {
 			throw new DataException(e);
 		}
 	}
@@ -84,8 +90,7 @@ public class DataService {
 			MessageDigest md = MessageDigest.getInstance("MD5");
 			byte[] digest = md.digest(toBeValidated.getBytes());
 			return DatatypeConverter.printHexBinary(digest).toLowerCase();
-		}
-		catch (NoSuchAlgorithmException ignored) {
+		} catch (NoSuchAlgorithmException ignored) {
 			return null;
 		}
 	}

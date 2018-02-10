@@ -12,7 +12,27 @@ import org.springframework.web.bind.annotation.RestController;
 public class PingControlller {
 
 	@RequestMapping(path = "/ping", method = {RequestMethod.GET})
-	public QrCodeScanResult ping() {
-		return new QrCodeScanResult(4711);
+	public AppInfo ping() {
+		return new AppInfo("1.0.0");
+	}
+
+	@SuppressWarnings("unused")
+	class AppInfo {
+		private String version;
+
+		public AppInfo() {
+		}
+
+		public AppInfo(String version) {
+			this.version = version;
+		}
+
+		public String getVersion() {
+			return version;
+		}
+
+		public void setVersion(String version) {
+			this.version = version;
+		}
 	}
 }
