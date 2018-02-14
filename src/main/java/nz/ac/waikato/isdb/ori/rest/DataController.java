@@ -41,6 +41,7 @@ public class DataController {
 	public QrCodeScan test(@RequestBody QrCodeScan scan) {
 		scan.setValid(dataService.isValidHash(scan));
 		scan.setComputedHash(dataService.getHash(scan));
+		scan.setFormattedDate(dataService.getFormattedDate(scan.getTime()));
 		return scan;
 	}
 

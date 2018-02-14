@@ -11,6 +11,7 @@ public class QrCodeScan {
 	private String hash;
 
 	private Boolean valid;
+	private String formattedDate;
 	private String computedHash;
 
 	public Integer getStudentId() {
@@ -59,6 +60,14 @@ public class QrCodeScan {
 
 	public void setValid(Boolean valid) {
 		this.valid = valid;
+	}
+
+	public String getFormattedDate() {
+		return formattedDate;
+	}
+
+	public void setFormattedDate(String formattedDate) {
+		this.formattedDate = formattedDate;
 	}
 
 	public String getComputedHash() {

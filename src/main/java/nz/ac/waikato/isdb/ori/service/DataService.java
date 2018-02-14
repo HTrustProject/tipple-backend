@@ -13,6 +13,7 @@ import java.nio.file.Paths;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
@@ -26,14 +27,15 @@ public class DataService {
 
 	private static final String lock = "data_file_lock";
 
+	private static final String QR_VALID_PREFIX = "18_uow_module_";
+
 	public QrCodeScan save(QrCodeScan scan) throws DataException {
 		boolean valid = isValidHash(scan);
 		scan.setValid(valid);
 
 		if (valid) {
-			String formattedTime = dateFormat.format(scan.getTime());
 			String data = String.format("%d\t\"%s\"\t\"%s\"\t\"%s\"\n",
-					scan.getStudentId(), scan.getGroup(), scan.getQr(), formattedTime);
+					scan.getStudentId(), scan.getGroup(), scan.getQr(), getFormattedDate(scan.getTime()));
 			writeData(data);
 		}
 
@@ -76,7 +78,8 @@ public class DataService {
 
 	public boolean isValid(QrCodeScan scan) {
 		return scan != null && scan.getStudentId() != null && isNotBlank(scan.getGroup()) &&
-				isNotBlank(scan.getQr()) && scan.getTime() != null && isNotBlank(scan.getHash());
+				isNotBlank(scan.getQr()) && scan.getTime() != null && isNotBlank(scan.getHash()) &&
+				scan.getQr().startsWith(QR_VALID_PREFIX);
 	}
 
 	public String getHash(QrCodeScan scan) {
@@ -93,5 +96,9 @@ public class DataService {
 		} catch (NoSuchAlgorithmException ignored) {
 			return null;
 		}
+	}
+
+	public String getFormattedDate(Date ms) {
+		return dateFormat.format(ms);
 	}
 }

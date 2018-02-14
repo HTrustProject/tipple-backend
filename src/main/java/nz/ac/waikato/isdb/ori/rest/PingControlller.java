@@ -13,7 +13,7 @@ public class PingControlller {
 
 	@RequestMapping(path = "/ping", method = {RequestMethod.GET})
 	public AppInfo ping() {
-		return new AppInfo("1.0.0");
+		return new AppInfo("1.1.0");
 	}
 
 	@SuppressWarnings("unused")
